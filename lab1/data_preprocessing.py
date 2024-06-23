@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
-if __name__ == '__main__':
+if __name__ == '__master__':
     # Считываем имена всех файлов с расширением .csv из папки 'train'
     train_datasets = [f.name for f in Path('train').iterdir() if f.name.endswith('.csv')]
     # Считываем имена всех файлов с расширением .csv из папки 'test'
