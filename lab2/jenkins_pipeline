@@ -1,10 +1,54 @@
 pipeline {
     agent any
     stages {
-     stage('Hello') {
-                steps {
-                    echo 'Hello world'
-                }
+        // Стадия клонирования репозитория
+        stage("Hello") {
+            steps {
+                git(
+                    url: "https://github.com/ivlasiza/mlops_practice.git", // URL репозитория
+                    branch: "master", // Ветка для клонирования
+                    changelog: true, // Включить ведение журнала изменений
+                    poll: true // Включить опрос изменений в репозитории
+                )
             }
-     }
+        }
+
+        // Стадия создания данных
+        stage('data_creation') {
+            steps {
+                sh 'python3 lab1/data_creation.py' // Запуск скрипта создания данных
+            }
+        }
+
+        // Стадия предобработки данных
+        stage('data_preprocessing') {
+            steps {
+                sh 'python3 lab1/data_preprocessing.py' // Запуск скрипта предобработки данных
+            }
+        }
+
+        // Стадия подготовки модели
+        stage('model_preparation') {
+            steps {
+                sh 'python3 lab1/model_preparation.py' // Запуск скрипта подготовки модели
+            }
+        }
+
+        // Стадия тестирования модели
+        stage('model_testing') {
+            steps {
+                sh 'python3 lab1/model_testing.py' // Запуск скрипта тестирования модели
+            }
+        }
+    }
+
+    post {
+        always {
+            // Архивирование артефактов после завершения пайплайна
+            archiveArtifacts artifacts: '**/*', // Сохранение всех файлов и папок
+                allowEmptyArchive: true, // Разрешить пустой архив
+                fingerprint: true, // Включить создание отпечатков файлов
+                onlyIfSuccessful: true // Выполнять архивацию только при успешном выполнении пайплайна
+        }
+    }
 }
